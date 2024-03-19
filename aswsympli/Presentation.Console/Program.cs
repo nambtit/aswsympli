@@ -18,7 +18,7 @@ var bingSearchUrl = $"https://www.bing.com/search?q={keyword}&count=10";
 var file = Path.Combine(@"D:\tmp", "input.txt");
 
 var getData = false;
-var getBingData = true;
+var getBingData = false;
 
 if (getBingData)
 {
