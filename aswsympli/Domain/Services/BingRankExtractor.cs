@@ -1,9 +1,14 @@
-﻿using Domain.Enums;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Domain.Enums;
 using Domain.ValueObjects;
 
 namespace Domain.Services
 {
-    public class GoogleRankExtractor : ISeoRankExtractor
+    public class BingRankExtractor : ISeoRankExtractor
     {
         public IEnumerable<SeoRecord> Extract(string companyUrl, StreamReader resultStream)
         {
@@ -23,12 +28,12 @@ namespace Domain.Services
             var foundAtIndexes = new Queue<int>();
 
             var result = new List<SeoRecord>();
-            //var queue = new Queue<char>();
+            var queue = new Queue<char>();
 
             while (!resultStream.EndOfStream)
             {
                 var c = (char)resultStream.Read();
-                //queue.Enqueue(c);
+                queue.Enqueue(c);
 
                 if (c == detectPattern[detectPatternIndex])
                 {
@@ -72,7 +77,7 @@ namespace Domain.Services
                 return Enumerable.Empty<SeoRecord>();
             }
 
-            //File.WriteAllText(@"D:\tmp\debug.txt", string.Join(null, queue));
+            File.WriteAllText(@"D:\tmp\debug.txt", string.Join(null, queue));
 
             var nowUTC = DateTime.UtcNow;
             return foundAtIndexes.Select(i => new SeoRecord

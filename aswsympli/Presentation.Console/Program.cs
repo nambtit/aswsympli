@@ -9,32 +9,50 @@ httpClient.DefaultRequestHeaders.Add("Content-Security-Policy", "sandbox;");
 httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
 httpClient.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
 
+httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
+
 const string keyword = @"""e-settlements""";
 const int maxResults = 10;
 var searchUrl = $"https://www.google.com/search?q={keyword}&num={maxResults}&hl=en";
+var bingSearchUrl = $"https://www.bing.com/search?q={keyword}&count=10";
+var file = Path.Combine(@"D:\tmp", "input.txt");
 
 var getData = false;
+var getBingData = true;
+
+if (getBingData)
+{
+    var sjson = await httpClient.GetStringAsync(bingSearchUrl);
+    await File.WriteAllTextAsync(Path.Combine(@"D:\tmp", "bingorigin.txt"), sjson);
+
+    return;
+}
 
 if (getData)
 {
     var sjson = await httpClient.GetStringAsync(searchUrl);
-    var stream = await httpClient.GetStreamAsync(searchUrl);
     await File.WriteAllTextAsync(Path.Combine(@"D:\tmp", "origin.txt"), sjson);
 
     return;
 }
 
- void ABC(StreamReader reader)
-{
+//var ex = new GoogleRankExtractor();
+//using var tmp = new StreamReader(file);
+//var r = ex.Extract("https://www.sympli.com.au", tmp);
+//foreach (var item in r)
+//{
+//    Console.WriteLine(item);
+//}
+//return;
 
-}
 
-using (var searchResultStream = await httpClient.GetStreamAsync(searchUrl))
+await using (var searchResultStream = await httpClient.GetStreamAsync(searchUrl))
 {
     var ex = new GoogleRankExtractor();
     using var tmp = new StreamReader(searchResultStream);
     var r = ex.Extract("https://www.sympli.com.au", tmp);
-    foreach(var item in r)
+
+    foreach (var item in r)
     {
         Console.WriteLine(item);
     }
@@ -43,7 +61,7 @@ using (var searchResultStream = await httpClient.GetStreamAsync(searchUrl))
 return;
 
 //var json = await httpClient.GetStringAsync(searchUrl);
-var file = Path.Combine(@"D:\tmp", "input.txt");
+
 //var file = Path.Combine(@"D:\tmp", "google.txt");
 
 var json = await File.ReadAllTextAsync(file);
@@ -126,3 +144,9 @@ Console.WriteLine(string.Join(",", foundAtIndexes));
 Console.ReadKey();
 
 return;
+
+
+
+//https://aicontentfy.com/en/blog/demystifying-google-search-url-parameters-and-how-to-use-them
+//https://learn.microsoft.com/en-us/bing/search-apis/bing-web-search/reference/query-parameters
+//https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/sandbox
