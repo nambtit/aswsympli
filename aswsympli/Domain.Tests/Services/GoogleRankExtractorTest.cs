@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Domain.Services;
 
 namespace Domain.Tests.Services
 {
@@ -7,9 +7,11 @@ namespace Domain.Tests.Services
         [Fact]
         public void ShouldExtractSearchDataWithoutDisposingInputStream()
         {
-            // ARRANGE
-            // ACT
-            // ASSERT
+            // Arrange
+            var sut = new GoogleRankExtractor();
+            // Act
+            _ = sut.Extract(It.IsAny<string>(), It.IsAny<StreamReader>());
+            // Assert
             1.Should().Be(1);
         }
     }
