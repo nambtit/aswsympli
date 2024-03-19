@@ -10,7 +10,7 @@ namespace Domain.ValueObjects
 
         public string Keyword { get; set; }
 
-        public int RankIndex { get; set; }
+        public int Rank { get; set; }
 
         public DateTime RecordedAtUtc { get; set; }
     }
