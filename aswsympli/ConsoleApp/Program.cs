@@ -1,7 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using ConsoleApp;
 
 var httpClient = new HttpClient();
 httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -10,69 +9,40 @@ httpClient.DefaultRequestHeaders.Add("Content-Security-Policy", "sandbox;");
 httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
 httpClient.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
 
-
-
-
 const string keyword = @"""e-settlements""";
 const int maxResults = 100;
 
+var getData = false;
 
-var searchUrl = $"https://www.google.com/search?q={keyword}&num={maxResults}&hl=en";
+if (getData)
+{
+    var searchUrl = $"https://www.google.com/search?q={keyword}&num={maxResults}&hl=en";
+    var sjson = await httpClient.GetStringAsync(searchUrl);
+    await File.WriteAllTextAsync(Path.Combine(@"D:\tmp", "origin.txt"), sjson);
 
-var sjson = await httpClient.GetStringAsync(searchUrl);
-await File.WriteAllTextAsync(Path.Combine(@"D:\tmp", "origin.txt"), sjson);
+    return;
+}
 
-return;
 
 //var json = await httpClient.GetStringAsync(searchUrl);
 var file = Path.Combine(@"D:\tmp", "input.txt");
 //var file = Path.Combine(@"D:\tmp", "google.txt");
+
 var json = await File.ReadAllTextAsync(file);
-const int size = 1000;
-var trackingQueue = new FixedSizedQueue<char>(size);
 
-var acceptedChars = new HashSet<char>
-{
-    '<', '>', 'd', 'i', 'v', 's', 'p', 'a', 'n', 'h', 'r', 'e', 'f', '=', 's', 'y', 'm', 'p', 'l', 'i'
-};
+//<a href="/url?q=https://www.sympli.com.au/&amp;sa=U&amp;ved=2ahUKEwj3gJLLm_-EAxXNSfUHHRhaBK8QFnoECEQQAg&amp;usg=AOvVaw3uNns9PSopuj-fTCffEv_u"
 
-//var pattern = "<cite class=\"tjvcx GvPZzd cHaqb\" role=\"text\">https://www.sympli.com.au</cite>"
+//const string detectSectionStartPattern = "<a href=\"/url?q=";
+const char detectSectionEndPattern = '"';
+const string detectPattern = "<a href=\"/url?q=https://sympli.com.au";
+var detectStartSectionIndex = detectPattern.LastIndexOf('=');
 
-var acceptedCharOrder = new Dictionary<char, HashSet<char>>
-{
-    {'<', new HashSet<char>{ '*' }},
-    {'>', new HashSet<char>{ '*' }},
-
-    {'d', new HashSet<char>{ '<' }},
-    {'i', new HashSet<char>{ 'd' }},
-    {'v', new HashSet<char>{ 'i' }},
-
-    {'s', new HashSet<char>{ 'd' }},
-    {'p', new HashSet<char>{ 'd' }},
-    {'a', new HashSet<char>{ 'd' }},
-    {'n', new HashSet<char>{ 'd' }},
-
-    {'h', new HashSet<char>{ '=' }},
-    {'r', new HashSet<char>{ 'h' }},
-    {'e', new HashSet<char>{ 'r' }},
-    {'f', new HashSet<char>{ 'e' }},
-};
-
-//<divclassnottranslatecitesympli.com.au
-//<divclassnottranslate => count index
-//<divclassnottranslatecitesympli.com.au
-
-const string resultSectionToken = "<div class=\"notranslate\"";
-const string seoListedToken = "role=\"text\">https://www.sympli.com.au</cite>";
-
-var sectionDetectArr = resultSectionToken.ToCharArray();
-var sectionTrackArr = new char[sectionDetectArr.Length];
-var sectionClearTokens = new HashSet<char> { '/' };
-var searchIndex = -1;
-var resultSectionTraceIndex = 0;
-var seoTrackIndex = 0;
-var withinSection = false;
+var detectPatternIndex = 0;
+var sectionStart = false;
+var sectionEnd = false;
+var currentSectionIndex = -1;
 var foundAtIndexes = new Queue<int>();
+var tmpCharQ = new Queue<char>();
 
 using (var jsonStream = new StreamReader(file))
 {
@@ -80,73 +50,81 @@ using (var jsonStream = new StreamReader(file))
     {
         var c = (char)jsonStream.Read();
 
-        if (withinSection)
+        // For debug.
+        tmpCharQ.Enqueue(c);
+        var tmps = string.Join(null, tmpCharQ);
+
+        if (c == detectPattern[detectPatternIndex])
         {
-            if (seoTrackIndex == seoListedToken.Length - 1)
+            if (!sectionEnd && !sectionStart && detectPatternIndex == detectStartSectionIndex)
             {
-                foundAtIndexes.Enqueue(searchIndex);
-                seoTrackIndex = 0;
-                withinSection = false;
+                sectionStart = true;
+                currentSectionIndex++;
             }
-            else
-            {
-                if (c == seoListedToken[seoTrackIndex])
-                {
-                    seoTrackIndex++;
-                }
-                else
-                {
-                    seoTrackIndex = 0;
-                }
-            }
+
+            detectPatternIndex++;
         }
         else
         {
-            if (c == resultSectionToken[resultSectionTraceIndex])
+            if (!sectionStart)
             {
-                resultSectionTraceIndex++;
+                detectPatternIndex = 0;
             }
-            else
-            {
-                // We are under a section.
-                if (resultSectionTraceIndex == sectionDetectArr.Length - 1)
-                {
-                    searchIndex++;
-                    withinSection = true;
-                }
 
-                resultSectionTraceIndex = 0;
+            if (sectionStart && c == detectSectionEndPattern)
+            {
+                sectionEnd = true;
             }
         }
 
+        if (sectionStart && detectPatternIndex == detectPattern.Length - 1)
+        {
+            foundAtIndexes.Enqueue(currentSectionIndex);
+            sectionEnd = true;
+        }
 
+        if (sectionEnd)
+        {
+            sectionStart = false;
+            sectionEnd = false;
+            detectPatternIndex = 0;
+        }
 
-
-
-        //Console.WriteLine(string.Join(null, sectionTrackArr.Select(e => Array.IndexOf(sectionTrackArr, e) <= trackIndex)));
-
-
-        //if (!acceptedChars.Contains(c))
+        //if (!sectionEnd && c == detectPattern[detectPatternIndex])
         //{
-        //    continue;
-        //}
-
-        //trackingQueue.Enqueue(c);
-
-        //if (char.Equals(c, '>'))
-        //{
-        //    if (trackingQueue.Limit == size)
+        //    if (!sectionStart && detectPatternIndex == detectStartSectionIndex)
         //    {
-        //        Console.WriteLine(trackingQueue.GetString());
+        //        sectionStart = true;
+        //        currentSectionIndex++;
+        //    }
+
+        //    detectPatternIndex++;
+        //}
+        //else
+        //{
+        //    if (sectionStart && c == detectSectionEndPattern)
+        //    {
+        //        sectionEnd = true;
         //    }
         //}
 
-        //if (trackingQueue.GetString().Contains("sympli"))
-        //{
-        //    Console.WriteLine(trackingQueue.GetString());
-        //}
+        if (currentSectionIndex > -1)
+        {
+            Console.WriteLine($"Section {currentSectionIndex}");
+        }
+
+        
+
+
+
+
+
+
     }
 }
+
+Console.WriteLine(string.Join(",", foundAtIndexes));
+Console.ReadKey();
 
 return;
 

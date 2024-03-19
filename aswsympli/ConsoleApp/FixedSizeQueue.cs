@@ -79,3 +79,5 @@ public class SearchExtractionRuleset
 
 
 //<a href="/url?q=https://www.firsttitle.com.au/blogs/4-things-you-should-know-about-electronic-settleme/&amp;sa=U&amp;ved=2ahUKEwjH6MGWmP6EAxVRna8BHXArDxYQFnoECF0QAg&amp;usg=AOvVaw2W5rxUL_GU_w7UK7rXvbJ3" data-ved="2ahUKEwjH6
+//<a href="/url?q=https://www.sympli.com.au/&amp;sa=U&amp;ved=2ahUKEwj3gJLLm_-EAxXNSfUHHRhaBK8QFnoECEQQAg&amp;usg=AOvVaw3uNns9PSopuj-fTCffEv_u"
+
