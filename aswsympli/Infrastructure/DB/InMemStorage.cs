@@ -2,13 +2,13 @@
 using Application.Models;
 using Domain.Enums;
 
-namespace Infrastructure.Storage
+namespace Infrastructure.DB
 {
-    public class InMemStorage : IApplicationStorage
+    public class InMemStorage : IApplicationDb
     {
         public Task<SearchRankData> GetRankDataByEngineAsync(SearchEngineEnum fromEngine)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new SearchRankData(DateTime.UtcNow, 1, 2, 3, 5, 7));
         }
 
         public Task UpdateRankDataByEngineAsync(SearchEngineEnum engine, SearchRankData data)

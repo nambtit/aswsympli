@@ -4,16 +4,21 @@ using Domain.Enums;
 
 namespace Application.Features.SEORank.Queries.GetSEORank
 {
-    public class GetSEORankData
+    public interface IGetSEORankDataHandler
     {
-        private readonly IApplicationStorage _applicationStorage;
+        Task<IEnumerable<SearchRankData>> HandleAsync();
+    }
 
-        public GetSEORankData(IApplicationStorage applicationStorage)
+    public class GetSEORankDataHandler: IGetSEORankDataHandler
+    {
+        private readonly IApplicationDb _applicationStorage;
+
+        public GetSEORankDataHandler(IApplicationDb applicationStorage)
         {
             _applicationStorage = applicationStorage;
         }
 
-        public async Task<IEnumerable<SearchRankData>> Handle()
+        public async Task<IEnumerable<SearchRankData>> HandleAsync()
         {
             var googleData = _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Google);
             var bingData = _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Bing);

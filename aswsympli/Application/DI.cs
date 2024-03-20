@@ -1,12 +1,25 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Application.Abstraction;
+using Application.Features.SEORank.Commands.UpdateSEORank;
+using Application.Features.SEORank.Queries.GetSEORank;
+using Domain.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
 {
     public static class DI
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<IGetSEORankDataHandler, GetSEORankDataHandler>()
+                    .AddScoped<IUpdateSEORankDataHandler, UpdateSEORankDataHandler>();
+
+            services.AddScoped<GoogleRankExtractor>();
+            services.AddScoped<BingRankExtractor>();
+            services.AddScoped<ISEORankExtractor, GoogleRankExtractor>();
+            services.AddScoped<IGoogleSEORankExtractor>(sp => (IGoogleSEORankExtractor)sp.GetService<GoogleRankExtractor>());
+            services.AddScoped<IBingSEORankExtractor>(sp => (IBingSEORankExtractor)sp.GetService<GoogleRankExtractor>());
+
             return services;
         }
     }

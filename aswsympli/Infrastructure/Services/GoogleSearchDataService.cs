@@ -4,11 +4,13 @@ using Infrastructure.Factories;
 
 namespace Infrastructure.Services
 {
-    public class BingSearchDataRepository : ISearchDataRepository
+    public interface IGoogleSearchDataService : ISearchDataService { }
+
+    public class GoogleSearchDataService : IGoogleSearchDataService
     {
         private readonly ISearchHttpClientFactory _httpClientFactory;
 
-        public BingSearchDataRepository(ISearchHttpClientFactory factory)
+        public GoogleSearchDataService(ISearchHttpClientFactory factory)
         {
             _httpClientFactory = factory;
         }

@@ -4,15 +4,21 @@ using Domain.Services;
 
 namespace Application.Features.SEORank.Commands.UpdateSEORank
 {
-    public class UpdateSEORankData
+    public interface IUpdateSEORankDataHandler
     {
-        private readonly IApplicationStorage _applicationStorage;
-        private readonly ISearchDataRepository _searchDataRepository;
+        Task HandleAsync();
+    }
+
+    public class UpdateSEORankDataHandler : IUpdateSEORankDataHandler
+    {
+        private readonly IApplicationDb _applicationStorage;
+        private readonly ISearchDataService _searchDataRepository;
         private readonly ISEORankExtractor _seoRankExtractor;
         private readonly IApplicationConfig _applicationConfig;
 
-        public UpdateSEORankData(IApplicationStorage applicationStorage,
-            ISearchDataRepository searchDataRepository,
+        public UpdateSEORankDataHandler(
+            IApplicationDb applicationStorage,
+            ISearchDataService searchDataRepository,
             ISEORankExtractor seoRankExtractor,
             IApplicationConfig applicationConfig)
         {
@@ -22,7 +28,7 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
             _applicationConfig = applicationConfig;
         }
 
-        public async Task Handle()
+        public async Task HandleAsync()
         {
             //const string keyword = "\"e-settlements\"";
             //const string companyUrl = "https://www.sympli.com.au";

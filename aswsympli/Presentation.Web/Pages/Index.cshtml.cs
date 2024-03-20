@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+using Application.Features.SEORank.Queries.GetSEORank;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Presentation.Web.Pages
@@ -6,15 +6,23 @@ namespace Presentation.Web.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
+        private readonly IGetSEORankDataHandler _handler;
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(ILogger<IndexModel> logger, IGetSEORankDataHandler handler)
         {
             _logger = logger;
+            _handler = handler;
         }
 
-        public void OnGet()
+        public async Task OnGet()
         {
-            GoogleRanks = new[] { 2, 8, 9 };
+            var data = await _handler.HandleAsync();
+            foreach (var item in data)
+            {
+                var s = item.ToString();
+            }
+
+            GoogleRanks = data.FirstOrDefault().Ranks;
             BingRanks = new[] { 0, 1, 3, 5, 6 };
             Keyword = "\"e-settlements\"";
             CompanyUrl = "https://www.sympli.com.au";

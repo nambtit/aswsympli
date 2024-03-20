@@ -1,7 +1,14 @@
+using Application;
+using Infrastructure;
+using Presentation.Web;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddInfrastructureServices(null);
+builder.Services.AddApplicationServices(null);
+builder.Services.AddPresentationServices(null);
 
 var app = builder.Build();
 

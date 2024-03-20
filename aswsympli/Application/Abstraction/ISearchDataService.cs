@@ -2,7 +2,7 @@
 
 namespace Application.Abstraction
 {
-    public interface ISearchDataRepository
+    public interface ISearchDataService
     {
         Task<Stream> GetSearchDataStreamAsync(SearchEngineEnum searchEngine, string keyword);
 
