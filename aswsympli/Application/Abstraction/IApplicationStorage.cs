@@ -6,5 +6,6 @@ namespace Application.Abstraction
     public interface IApplicationStorage
     {
         Task<SearchRankData> GetRankDataByEngineAsync(SearchEngineEnum fromEngine);
+        Task UpdateRankDataByEngineAsync(SearchEngineEnum engine, SearchRankData data);
     }
 }

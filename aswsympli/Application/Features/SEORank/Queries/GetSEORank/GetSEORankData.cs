@@ -13,12 +13,12 @@ namespace Application.Features.SEORank.Queries.GetSEORank
             _applicationStorage = applicationStorage;
         }
 
-        public async Task<IEnumerable<SearchRankData>> GetAllSearchRankDataAsync()
+        public async Task<IEnumerable<SearchRankData>> Handle()
         {
-            var googleData = await _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Google);
-            var bingData = await _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Bing);
+            var googleData = _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Google);
+            var bingData = _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Bing);
 
-            return [googleData, bingData];
+            return await Task.WhenAll(googleData, bingData);
         }
     }
 }

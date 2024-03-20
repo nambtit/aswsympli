@@ -10,5 +10,10 @@ namespace Infrastructure.Storage
         {
             throw new NotImplementedException();
         }
+
+        public Task UpdateRankDataByEngineAsync(SearchEngineEnum engine, SearchRankData data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

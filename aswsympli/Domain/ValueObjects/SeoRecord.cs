@@ -2,7 +2,7 @@
 
 namespace Domain.ValueObjects
 {
-    public record SeoRecord
+    public record SEORecord
     {
         public SearchEngineEnum SearchEngine { get; set; }
 

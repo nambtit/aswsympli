@@ -3,9 +3,9 @@ using Domain.ValueObjects;
 
 namespace Domain.Services
 {
-    public class GoogleRankExtractor : ISeoRankExtractor
+    public class GoogleRankExtractor : ISEORankExtractor
     {
-        public IEnumerable<SeoRecord> Extract(string companyUrl, StreamReader resultStream)
+        public IEnumerable<SEORecord> Extract(string companyUrl, StreamReader resultStream)
         {
             const char detectSectionEndPattern = '"';
             var simpliedUrl = companyUrl
@@ -22,7 +22,7 @@ namespace Domain.Services
             var currentSectionIndex = -1;
             var foundAtIndexes = new Queue<int>();
 
-            var result = new List<SeoRecord>();
+            var result = new List<SEORecord>();
             //var queue = new Queue<char>();
 
             while (!resultStream.EndOfStream)
@@ -69,13 +69,13 @@ namespace Domain.Services
 
             if (!foundAtIndexes.Any())
             {
-                return Enumerable.Empty<SeoRecord>();
+                return Enumerable.Empty<SEORecord>();
             }
 
             //File.WriteAllText(@"D:\tmp\debug.txt", string.Join(null, queue));
 
             var nowUTC = DateTime.UtcNow;
-            return foundAtIndexes.Select(i => new SeoRecord
+            return foundAtIndexes.Select(i => new SEORecord
             {
                 CompanyUrl = companyUrl,
                 Rank = i,
