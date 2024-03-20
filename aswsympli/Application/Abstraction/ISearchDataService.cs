@@ -1,11 +1,10 @@
-﻿using Domain.Enums;
-
-namespace Application.Abstraction
+﻿namespace Application.Abstraction
 {
     public interface ISearchDataService
     {
-        Task<Stream> GetSearchDataStreamAsync(SearchEngineEnum searchEngine, string keyword);
-
         Task<Stream> GetSearchDataStreamAsync(string keyword);
     }
+
+    public interface IBingSearchDataService : ISearchDataService { }
+    public interface IGoogleSearchDataService : ISearchDataService { }
 }

@@ -1,12 +1,17 @@
-﻿namespace Application.Models
+﻿using Application.Features.SEORank.Enums;
+
+namespace Application.Models
 {
     public class SearchRankData
     {
-        public SearchRankData(DateTime recordedAtUtc, params int[] ranks)
+        public SearchRankData(SearchEngineEnum engine, DateTime recordedAtUtc, params int[] ranks)
         {
+            Engine = engine;
             Ranks = ranks;
             RecordedAtUTC = recordedAtUtc;
         }
+
+        public SearchEngineEnum Engine { get; init; }
 
         public IEnumerable<int> Ranks { get; init; }
 

@@ -4,8 +4,6 @@ using Infrastructure.Factories;
 
 namespace Infrastructure.Services
 {
-    public interface IBingSearchDataService : ISearchDataService { }
-
     public class BingSearchDataService : IBingSearchDataService
     {
         private readonly ISearchHttpClientFactory _httpClientFactory;

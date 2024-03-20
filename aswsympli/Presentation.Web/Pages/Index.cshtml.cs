@@ -1,3 +1,4 @@
+using Application.Features.SEORank.Enums;
 using Application.Features.SEORank.Queries.GetSEORank;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -17,13 +18,10 @@ namespace Presentation.Web.Pages
         public async Task OnGet()
         {
             var data = await _handler.HandleAsync();
-            foreach (var item in data)
-            {
-                var s = item.ToString();
-            }
 
-            GoogleRanks = data.FirstOrDefault().Ranks;
-            BingRanks = new[] { 0, 1, 3, 5, 6 };
+            GoogleRanks = data.FirstOrDefault(e => e.Engine == SearchEngineEnum.Google).Ranks;
+            BingRanks = data.FirstOrDefault(e => e.Engine == SearchEngineEnum.Bing).Ranks;
+
             Keyword = "\"e-settlements\"";
             CompanyUrl = "https://www.sympli.com.au";
         }

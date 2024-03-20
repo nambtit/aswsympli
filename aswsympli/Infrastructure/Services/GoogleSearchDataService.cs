@@ -4,8 +4,6 @@ using Infrastructure.Factories;
 
 namespace Infrastructure.Services
 {
-    public interface IGoogleSearchDataService : ISearchDataService { }
-
     public class GoogleSearchDataService : IGoogleSearchDataService
     {
         private readonly ISearchHttpClientFactory _httpClientFactory;

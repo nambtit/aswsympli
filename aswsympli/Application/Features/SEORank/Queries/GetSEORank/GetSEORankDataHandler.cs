@@ -21,6 +21,7 @@ namespace Application.Features.SEORank.Queries.GetSEORank
         public async Task<IEnumerable<SearchRankData>> HandleAsync()
         {
             var googleData = _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Google);
+
             var bingData = _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Bing);
 
             return await Task.WhenAll(googleData, bingData);

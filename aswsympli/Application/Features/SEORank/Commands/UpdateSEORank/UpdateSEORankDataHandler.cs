@@ -1,6 +1,5 @@
 ﻿using Application.Abstraction;
 using Domain.Enums;
-using Domain.Services;
 
 namespace Application.Features.SEORank.Commands.UpdateSEORank
 {
@@ -12,19 +11,25 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
     public class UpdateSEORankDataHandler : IUpdateSEORankDataHandler
     {
         private readonly IApplicationDb _applicationStorage;
-        private readonly ISearchDataService _searchDataRepository;
-        private readonly ISEORankExtractor _seoRankExtractor;
+        private readonly IGoogleSearchDataService _googleSearchDataService;
+        private readonly IBingSearchDataService _bingSearchDataService;
+        private readonly IGoogleSEORankExtractor _googleSEORankExtractor;
+        private readonly IBingSEORankExtractor _bingSEORankExtractor;
         private readonly IApplicationConfig _applicationConfig;
 
         public UpdateSEORankDataHandler(
             IApplicationDb applicationStorage,
-            ISearchDataService searchDataRepository,
-            ISEORankExtractor seoRankExtractor,
+            IGoogleSearchDataService googleSearchDataService,
+            IBingSearchDataService bingSearchDataService,
+            IGoogleSEORankExtractor googleSEORankExtractor,
+            IBingSEORankExtractor bingSEORankExtractor,
             IApplicationConfig applicationConfig)
         {
             _applicationStorage = applicationStorage;
-            _searchDataRepository = searchDataRepository;
-            _seoRankExtractor = seoRankExtractor;
+            _googleSearchDataService = googleSearchDataService;
+            _bingSearchDataService = bingSearchDataService;
+            _googleSEORankExtractor = googleSEORankExtractor;
+            _bingSEORankExtractor = bingSEORankExtractor;
             _applicationConfig = applicationConfig;
         }
 
@@ -38,18 +43,18 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
 
             foreach (var kw in keywords)
             {
-                await using (var googleData = await _searchDataRepository.GetSearchDataStreamAsync(SearchEngineEnum.Google, kw))
+                await using (var googleData = await _googleSearchDataService.GetSearchDataStreamAsync(kw))
                 {
                     using var reader = new StreamReader(googleData);
-                    var googleRankData = _seoRankExtractor.Extract(companyUrl, reader);
+                    var googleRankData = _googleSEORankExtractor.Extract(companyUrl, reader);
 
                     await _applicationStorage.UpdateRankDataByEngineAsync(SearchEngineEnum.Google, null);
                 }
 
-                await using (var bingData = await _searchDataRepository.GetSearchDataStreamAsync(SearchEngineEnum.Bing, kw))
+                await using (var bingData = await _bingSearchDataService.GetSearchDataStreamAsync(kw))
                 {
                     using var reader = new StreamReader(bingData);
-                    var bingRankData = _seoRankExtractor.Extract(companyUrl, reader);
+                    var bingRankData = _bingSEORankExtractor.Extract(companyUrl, reader);
 
                     await _applicationStorage.UpdateRankDataByEngineAsync(SearchEngineEnum.Bing, null);
                 }

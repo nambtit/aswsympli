@@ -16,7 +16,6 @@ namespace Application
 
             services.AddScoped<GoogleRankExtractor>();
             services.AddScoped<BingRankExtractor>();
-            services.AddScoped<ISEORankExtractor, GoogleRankExtractor>();
             services.AddScoped<IGoogleSEORankExtractor>(sp => (IGoogleSEORankExtractor)sp.GetService<GoogleRankExtractor>());
             services.AddScoped<IBingSEORankExtractor>(sp => (IBingSEORankExtractor)sp.GetService<GoogleRankExtractor>());
 
