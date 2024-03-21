@@ -12,7 +12,7 @@ namespace Presentation.Web
             configuration.GetSection(AppConfig.SectionName).Bind(appConfig);
             services.AddSingleton<IApplicationConfig>(sp => appConfig);
 
-            services.AddHostedService<RankDataUpdateService>();
+            services.AddHostedService<HostedRankDataUpdateService>();
 
             return services;
         }

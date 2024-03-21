@@ -1,41 +1,33 @@
-﻿using Application.Abstraction;
+﻿using System.Collections.Concurrent;
+using Application.Abstraction;
+using Application.Features.SEORank.Enums;
 using Application.Models;
-using Domain.Enums;
 
 namespace Infrastructure.DB
 {
     public class InMemStorage : IApplicationDb
     {
-        private readonly Dictionary<SearchEngineEnum, SearchRankData> _storage;
+        private readonly ConcurrentDictionary<AppSearchEngineEnum, SearchRankData> _storage;
 
         public InMemStorage()
         {
-            _storage = new Dictionary<SearchEngineEnum, SearchRankData>();
+            _storage = new ConcurrentDictionary<AppSearchEngineEnum, SearchRankData>();
         }
 
-        public Task<SearchRankData> GetRankDataByEngineAsync(SearchEngineEnum fromEngine)
+        public Task<SearchRankData> GetRankDataByEngineAsync(AppSearchEngineEnum fromEngine)
         {
-            switch (fromEngine)
+            if (!_storage.TryGetValue(fromEngine, out var rankData))
             {
-                case SearchEngineEnum.Bing:
-                    {
-                        return Task.FromResult(new SearchRankData(Application.Features.SEORank.Enums.SearchEngineEnum.Bing, DateTime.UtcNow, 1, 2, 3, 5, 7));
-                    }
-                case SearchEngineEnum.Google:
-                    {
-                        return Task.FromResult(new SearchRankData(Application.Features.SEORank.Enums.SearchEngineEnum.Google, DateTime.UtcNow, 0, 9, 11));
-                    }
-
-                default:
-                    {
-                        throw new Exception($"Not supported engine {fromEngine}");
-                    }
+                return Task.FromResult(new SearchRankData(fromEngine, DateTime.UtcNow));
             }
+
+            return Task.FromResult(rankData);
         }
 
-        public Task UpdateRankDataByEngineAsync(SearchEngineEnum engine, SearchRankData data)
+        public Task UpdateRankDataByEngineAsync(AppSearchEngineEnum engine, SearchRankData data)
         {
-            _storage.TryAdd(engine, data);
+            _storage.AddOrUpdate(engine, data, (engine, data) => data);
+
             return Task.CompletedTask;
         }
     }

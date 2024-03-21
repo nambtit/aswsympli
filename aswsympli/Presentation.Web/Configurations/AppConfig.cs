@@ -9,5 +9,7 @@ namespace Presentation.Web.Configurations
         public IEnumerable<string> SearchKeywords { get; set; }
 
         public string CompanyUrl { get; set; }
+
+        public int SEORankDataRefreshFrequencyMinutes { get; set; }
     }
 }

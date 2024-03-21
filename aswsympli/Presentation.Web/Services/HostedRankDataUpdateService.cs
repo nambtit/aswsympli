@@ -1,22 +1,25 @@
-﻿using Application.Features.SEORank.Commands.UpdateSEORank;
+﻿using Application.Abstraction;
+using Application.Features.SEORank.Commands.UpdateSEORank;
 using SysTimer = System.Timers;
 
 namespace Presentation.Web.Services
 {
-    public class RankDataUpdateService : IHostedService, IDisposable
+    public class HostedRankDataUpdateService : IHostedService, IDisposable
     {
-        private SysTimer.Timer _timer;
+        private readonly SysTimer.Timer _timer;
         private bool _wip;
         private readonly IServiceProvider _serviceProvider;
 
-        public RankDataUpdateService(IServiceProvider serviceProvider)
+        public HostedRankDataUpdateService(IServiceProvider serviceProvider, IApplicationConfig applicationConfig)
         {
             _serviceProvider = serviceProvider;
+
+            var interval = TimeSpan.FromMinutes(applicationConfig.SEORankDataRefreshFrequencyMinutes);
+            _timer = new SysTimer.Timer(interval);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new SysTimer.Timer(new TimeSpan(0, 0, 10));
             _timer.Elapsed += UpdateSEORank;
             _timer.Enabled = true;
             return Task.CompletedTask;

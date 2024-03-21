@@ -77,7 +77,6 @@ namespace Domain.Services
             var nowUTC = DateTime.UtcNow;
             return foundAtIndexes.Select(i => new SEORecord
             {
-                CompanyUrl = companyUrl,
                 Rank = i,
                 RecordedAtUtc = nowUTC,
                 SearchEngine = SearchEngineEnum.Google

@@ -1,7 +1,8 @@
 ﻿using Application.Abstraction;
-using Domain.Enums;
+using Application.Features.SEORank.Enums;
+using Application.Models;
 using Domain.Services;
-using Microsoft.Extensions.Options;
+using Domain.ValueObjects;
 
 namespace Application.Features.SEORank.Commands.UpdateSEORank
 {
@@ -37,9 +38,6 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
 
         public async Task HandleAsync()
         {
-            //const string keyword = "\"e-settlements\"";
-            //const string companyUrl = "https://www.sympli.com.au";
-
             var keywords = _applicationConfig.SearchKeywords;
             var companyUrl = _applicationConfig.CompanyUrl;
 
@@ -50,7 +48,8 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
                     using var reader = new StreamReader(googleData);
                     var googleRankData = _googleSEORankExtractor.Extract(companyUrl, reader);
 
-                    await _applicationStorage.UpdateRankDataByEngineAsync(SearchEngineEnum.Google, null);
+                    var data = ToSearchRankData(googleRankData);
+                    await _applicationStorage.UpdateRankDataByEngineAsync(AppSearchEngineEnum.Google, data);
                 }
 
                 await using (var bingData = await _bingSearchDataService.GetSearchDataStreamAsync(kw))
@@ -58,9 +57,24 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
                     using var reader = new StreamReader(bingData);
                     var bingRankData = _bingSEORankExtractor.Extract(companyUrl, reader);
 
-                    await _applicationStorage.UpdateRankDataByEngineAsync(SearchEngineEnum.Bing, null);
+                    var data = ToSearchRankData(bingRankData);
+                    await _applicationStorage.UpdateRankDataByEngineAsync(AppSearchEngineEnum.Bing, data);
                 }
             }
+        }
+
+        private SearchRankData ToSearchRankData(IEnumerable<SEORecord> records)
+        {
+            if (records == null || !records.Any())
+            {
+                return null;
+            }
+
+            var d = records.First();
+            var ranks = records.Select(e => e.Rank);
+            var eng = d.SearchEngine == Domain.Enums.SearchEngineEnum.Google ? AppSearchEngineEnum.Google : AppSearchEngineEnum.Bing;
+
+            return new SearchRankData(eng, d.RecordedAtUtc, ranks.ToArray());
         }
     }
 }

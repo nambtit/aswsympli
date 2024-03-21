@@ -1,6 +1,6 @@
 ﻿namespace Application.Features.SEORank.Enums
 {
-    public enum SearchEngineEnum
+    public enum AppSearchEngineEnum
     {
         Google,
         Bing

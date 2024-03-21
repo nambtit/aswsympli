@@ -19,8 +19,8 @@ namespace Presentation.Web.Pages
         {
             var data = await _handler.HandleAsync();
 
-            GoogleRanks = data.FirstOrDefault(e => e.Engine == SearchEngineEnum.Google).Ranks;
-            BingRanks = data.FirstOrDefault(e => e.Engine == SearchEngineEnum.Bing).Ranks;
+            GoogleRanks = data.FirstOrDefault(e => e.Engine == AppSearchEngineEnum.Google).Ranks;
+            BingRanks = data.FirstOrDefault(e => e.Engine == AppSearchEngineEnum.Bing).Ranks;
 
             Keyword = "\"e-settlements\"";
             CompanyUrl = "https://www.sympli.com.au";

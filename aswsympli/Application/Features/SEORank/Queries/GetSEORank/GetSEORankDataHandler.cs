@@ -1,6 +1,6 @@
 ﻿using Application.Abstraction;
+using Application.Features.SEORank.Enums;
 using Application.Models;
-using Domain.Enums;
 
 namespace Application.Features.SEORank.Queries.GetSEORank
 {
@@ -20,9 +20,9 @@ namespace Application.Features.SEORank.Queries.GetSEORank
 
         public async Task<IEnumerable<SearchRankData>> HandleAsync()
         {
-            var googleData = _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Google);
+            var googleData = _applicationStorage.GetRankDataByEngineAsync(AppSearchEngineEnum.Google);
 
-            var bingData = _applicationStorage.GetRankDataByEngineAsync(SearchEngineEnum.Bing);
+            var bingData = _applicationStorage.GetRankDataByEngineAsync(AppSearchEngineEnum.Bing);
 
             return await Task.WhenAll(googleData, bingData);
         }
