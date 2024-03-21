@@ -13,7 +13,7 @@ namespace Infrastructure.Services
 
         public async Task<Stream> GetSearchDataStreamAsync(string keyword, int pageSize, int skip, CancellationToken token)
         {
-            var searchUrl = $"/search?q={keyword}&count={pageSize}&first={skip}&setLang=en-AU";
+            var searchUrl = $"/search?q={keyword}&count={pageSize}&first={skip}&setLang=en-AU&r={Guid.NewGuid()}";
             return await _httpClient.GetStreamAsync(searchUrl, token);
         }
     }

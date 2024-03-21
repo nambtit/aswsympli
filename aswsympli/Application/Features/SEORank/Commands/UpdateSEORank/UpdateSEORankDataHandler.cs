@@ -72,6 +72,7 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
                 await _applicationStorage.UpdateRankDataByEngineAsync(AppSearchEngineEnum.Google, googleRankData);
                 pageIndex = 0;
                 totalResults = 0;
+                relativePageSize = 10;
                 cts = new CancellationTokenSource();
 
                 while (totalResults < topNResults)
