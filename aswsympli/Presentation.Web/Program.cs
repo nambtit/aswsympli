@@ -1,14 +1,23 @@
 using Application;
 using Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Presentation.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//var builder = new ConfigurationBuilder()
+//        .SetBasePath(env.ContentRootPath)
+//        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+//        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+//        .AddEnvironmentVariables();
+
+//Configuration = builder.Build();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddInfrastructureServices(null);
-builder.Services.AddApplicationServices(null);
-builder.Services.AddPresentationServices(null);
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddPresentationServices(builder.Configuration);
 
 var app = builder.Build();
 

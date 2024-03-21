@@ -1,6 +1,7 @@
 ﻿using Application.Abstraction;
 using Domain.Enums;
 using Domain.Services;
+using Microsoft.Extensions.Options;
 
 namespace Application.Features.SEORank.Commands.UpdateSEORank
 {

@@ -6,6 +6,13 @@ namespace Infrastructure.DB
 {
     public class InMemStorage : IApplicationDb
     {
+        private readonly Dictionary<SearchEngineEnum, SearchRankData> _storage;
+
+        public InMemStorage()
+        {
+            _storage = new Dictionary<SearchEngineEnum, SearchRankData>();
+        }
+
         public Task<SearchRankData> GetRankDataByEngineAsync(SearchEngineEnum fromEngine)
         {
             switch (fromEngine)
@@ -28,7 +35,8 @@ namespace Infrastructure.DB
 
         public Task UpdateRankDataByEngineAsync(SearchEngineEnum engine, SearchRankData data)
         {
-            throw new NotImplementedException();
+            _storage.TryAdd(engine, data);
+            return Task.CompletedTask;
         }
     }
 }

@@ -8,8 +8,9 @@ namespace Presentation.Web
     {
         public static IServiceCollection AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IApplicationConfig, AppConfig>();
-            services.AddSingleton<RankDataUpdateService>();
+            var appConfig = new AppConfig();
+            configuration.GetSection(AppConfig.SectionName).Bind(appConfig);
+            services.AddSingleton<IApplicationConfig>(sp => appConfig);
 
             services.AddHostedService<RankDataUpdateService>();
 

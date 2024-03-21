@@ -4,8 +4,10 @@ namespace Presentation.Web.Configurations
 {
     public class AppConfig : IApplicationConfig
     {
-        public IEnumerable<string> SearchKeywords => new[] { "e-settlements" };
+        public const string SectionName = "AppConfig";
 
-        public string CompanyUrl => "https://www.sympli.com.au";
+        public IEnumerable<string> SearchKeywords { get; set; }
+
+        public string CompanyUrl { get; set; }
     }
 }
