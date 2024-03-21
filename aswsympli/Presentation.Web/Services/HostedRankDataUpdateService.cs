@@ -9,12 +9,14 @@ namespace Presentation.Web.Services
         private readonly SysTimer.Timer _timer;
         private bool _wip;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<HostedRankDataUpdateService> _logger;
 
-        public HostedRankDataUpdateService(IServiceProvider serviceProvider, IApplicationConfig applicationConfig)
+        public HostedRankDataUpdateService(IServiceProvider serviceProvider, IApplicationConfig applicationConfig, ILogger<HostedRankDataUpdateService> logger)
         {
             _serviceProvider = serviceProvider;
-
+            _logger = logger;
             var interval = TimeSpan.FromMinutes(applicationConfig.SEORankDataRefreshFrequencyMinutes);
+            interval = TimeSpan.FromSeconds(10);
             _timer = new SysTimer.Timer(interval);
         }
 
@@ -33,18 +35,25 @@ namespace Presentation.Web.Services
 
         private void UpdateSEORank(object? sender, SysTimer.ElapsedEventArgs e)
         {
-            if (_wip)
+            try
             {
-                return;
+                if (_wip)
+                {
+                    return;
+                }
+
+                _wip = true;
+
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var handler = scope.ServiceProvider.GetService<IUpdateSEORankDataHandler>();
+                    handler.HandleAsync().Wait();
+                    _wip = false;
+                }
             }
-
-            _wip = true;
-
-            using (var scope = _serviceProvider.CreateScope())
+            catch (Exception ex)
             {
-                var handler = scope.ServiceProvider.GetService<IUpdateSEORankDataHandler>();
-                handler.HandleAsync().Wait();
-                _wip = false;
+                _logger.LogError($"Failed to update SEO rank data. Error: {ex}");
             }
         }
 

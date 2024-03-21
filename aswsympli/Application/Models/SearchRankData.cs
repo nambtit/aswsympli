@@ -4,17 +4,16 @@ namespace Application.Models
 {
     public class SearchRankData
     {
-        public SearchRankData(AppSearchEngineEnum engine, DateTime recordedAtUtc, IOrderedEnumerable<int> ranks)
+        public SearchRankData(AppSearchEngineEnum engine)
         {
             Engine = engine;
-            Ranks = ranks;
-            RecordedAtUTC = recordedAtUtc;
+            Ranks = Enumerable.Empty<int>().Order();
         }
 
         public AppSearchEngineEnum Engine { get; init; }
 
-        public IOrderedEnumerable<int> Ranks { get; init; }
+        public IOrderedEnumerable<int> Ranks { get; set; }
 
-        public DateTime RecordedAtUTC { get; init; }
+        public DateTime RecordedAtUTC { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 {
     public interface ISearchDataService
     {
-        Task<Stream> GetSearchDataStreamAsync(string keyword);
+        Task<Stream> GetSearchDataStreamAsync(string keyword, int pageSize, int skip, CancellationToken token);
     }
 
     public interface IBingSearchDataService : ISearchDataService { }

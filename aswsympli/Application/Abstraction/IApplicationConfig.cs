@@ -16,5 +16,18 @@
         /// How frequent the background task should call to update SEO rank data, in minutes.
         /// </summary>
         int SEORankDataRefreshFrequencyMinutes { get; }
+
+        /// <summary>
+        /// The number of top results to lookup for ranking, e.g. Only check top 50 results.
+        /// </summary>
+        int TotalSearchResultsToLookup { get; }
+
+        /// <summary>
+        /// Relative number of results expected to be in a page. The number of results
+        /// can vary depending on search engine behavior, please do not expect it to be always as specified.
+        /// Setting too small page size could cause 429 (Too Many Requests) error when the app 
+        /// sends many subsequent requests for searches.
+        /// </summary>
+        int MaxResultPerPage { get; }
     }
 }

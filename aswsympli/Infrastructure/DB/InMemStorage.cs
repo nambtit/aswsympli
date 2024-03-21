@@ -18,7 +18,7 @@ namespace Infrastructure.DB
         {
             if (!_storage.TryGetValue(fromEngine, out var rankData))
             {
-                return Task.FromResult(new SearchRankData(fromEngine, DateTime.UtcNow, Enumerable.Empty<int>().Order()));
+                return Task.FromResult(new SearchRankData(fromEngine));
             }
 
             return Task.FromResult(rankData);

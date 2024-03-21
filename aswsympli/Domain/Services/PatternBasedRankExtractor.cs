@@ -34,9 +34,12 @@ namespace Domain.Services
             var currentSectionIndex = -1;
             var foundAtIndexes = new Queue<int>();
 
+            var queue = new Queue<char>();
+
             while (!resultStream.EndOfStream)
             {
                 var c = (char)resultStream.Read();
+                queue.Enqueue(c);
 
                 // When within a section, track if there is a closing tag of the section for flagging it.
                 if (sectionStarted)
@@ -93,6 +96,8 @@ namespace Domain.Services
             result.RecordedAtUtc = DateTime.UtcNow;
             result.Ranks = foundAtIndexes.Order();
             result.TotalResults = currentSectionIndex + 1;
+
+            File.WriteAllText(@"D:\tmp\debug1.txt", string.Join(null, queue));
 
             return result;
         }

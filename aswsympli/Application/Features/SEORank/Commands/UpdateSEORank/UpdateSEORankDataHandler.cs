@@ -40,39 +40,77 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
         {
             var keywords = _applicationConfig.SearchKeywords;
             var companyUrl = _applicationConfig.CompanyUrl;
+            var topNResults = _applicationConfig.TotalSearchResultsToLookup;
+            var relativePageSize = _applicationConfig.MaxResultPerPage;
 
             foreach (var kw in keywords)
             {
-                await using (var googleData = await _googleSearchDataService.GetSearchDataStreamAsync(kw))
-                {
-                    using var reader = new StreamReader(googleData);
-                    var googleRankData = _googleSEORankExtractor.Extract(companyUrl, reader);
+                var totalResults = 300;
+                var pageIndex = 0;
+                var googleRankData = new SearchRankData(AppSearchEngineEnum.Google);
+                var bingRankData = new SearchRankData(AppSearchEngineEnum.Bing);
 
-                    var data = ToSearchRankData(googleRankData);
-                    await _applicationStorage.UpdateRankDataByEngineAsync(AppSearchEngineEnum.Google, data);
+                var cts = new CancellationTokenSource();
+
+                while (totalResults < topNResults)
+                {
+                    var pageSize = (topNResults - totalResults) > relativePageSize ? relativePageSize : topNResults - totalResults;
+                    await using (var googleData = await _googleSearchDataService.GetSearchDataStreamAsync(kw, pageSize, totalResults, cts.Token))
+                    {
+                        using var reader = new StreamReader(googleData);
+                        var rankData = _googleSEORankExtractor.Extract(companyUrl, reader);
+                        var currentIndex = totalResults > 0 ? totalResults - 1 : 0;
+
+                        MergeSearchRankData(googleRankData, rankData, currentIndex);
+                        totalResults += rankData.TotalResults;
+                    }
+
+                    pageIndex++;
                 }
 
-                await using (var bingData = await _bingSearchDataService.GetSearchDataStreamAsync(kw))
-                {
-                    using var reader = new StreamReader(bingData);
-                    var bingRankData = _bingSEORankExtractor.Extract(companyUrl, reader);
+                CleaningRankData(googleRankData, topNResults - 1);
+                await _applicationStorage.UpdateRankDataByEngineAsync(AppSearchEngineEnum.Google, googleRankData);
+                pageIndex = 0;
+                totalResults = 0;
+                cts = new CancellationTokenSource();
 
-                    var data = ToSearchRankData(bingRankData);
-                    await _applicationStorage.UpdateRankDataByEngineAsync(AppSearchEngineEnum.Bing, data);
+                while (totalResults < topNResults)
+                {
+                    var pageSize = (topNResults - totalResults) > relativePageSize ? relativePageSize : topNResults - totalResults;
+                    await using (var bingData = await _bingSearchDataService.GetSearchDataStreamAsync(kw, pageSize, totalResults, cts.Token))
+                    {
+                        using var reader = new StreamReader(bingData);
+                        var rankData = _bingSEORankExtractor.Extract(companyUrl, reader);
+                        var currentIndex = totalResults > 0 ? totalResults - 1 : 0;
+
+                        MergeSearchRankData(bingRankData, rankData, currentIndex);
+                        totalResults += rankData.TotalResults;
+                    }
+
+                    pageIndex++;
                 }
+
+                CleaningRankData(bingRankData, topNResults - 1);
+                await _applicationStorage.UpdateRankDataByEngineAsync(AppSearchEngineEnum.Bing, bingRankData);
             }
         }
 
-        private SearchRankData ToSearchRankData(RankExtractResult result)
+        private void MergeSearchRankData(SearchRankData origin, RankExtractResult result, int currentIndex)
         {
-            if (result == null)
+            if (result == null || result.Ranks == null || !result.Ranks.Any())
             {
-                return null;
+                return;
             }
 
-            var eng = result.Engine == Domain.Enums.SearchEngineEnum.Google ? AppSearchEngineEnum.Google : AppSearchEngineEnum.Bing;
+            var ranks = result.Ranks.Select(e => e + currentIndex);
 
-            return new SearchRankData(eng, result.RecordedAtUtc, result.Ranks);
+            origin.Ranks = origin.Ranks.Concat(ranks).Order();
+            origin.RecordedAtUTC = result.RecordedAtUtc;
+        }
+
+        private void CleaningRankData(SearchRankData data, int maxResultIndex)
+        {
+            data.Ranks = data.Ranks.Distinct().Where(e => e <= maxResultIndex).Order();
         }
     }
 }

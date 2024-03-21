@@ -11,5 +11,9 @@ namespace Presentation.Web.Configurations
         public string CompanyUrl { get; set; }
 
         public int SEORankDataRefreshFrequencyMinutes { get; set; }
+
+        public int TotalSearchResultsToLookup { get; set; }
+
+        public int MaxResultPerPage { get; set; }
     }
 }
