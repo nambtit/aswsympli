@@ -2,17 +2,24 @@
 using System.IO;
 using Domain.Services;
 
-var httpClient = new HttpClient();
-httpClient.DefaultRequestHeaders.Accept.Clear();
-httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.8");
-httpClient.DefaultRequestHeaders.Add("Content-Security-Policy", "sandbox;");
-httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-httpClient.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
+static HttpClient SetHttpClientHeaders()
+{
+    var httpClient = new HttpClient();
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.8");
+    httpClient.DefaultRequestHeaders.Add("Content-Security-Policy", "sandbox;");
+    httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+    httpClient.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
+    httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
+    return httpClient;
+}
 
-httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
+
+var httpClient = SetHttpClientHeaders();
 
 const string keyword = @"""e-settlements""";
 const int maxResults = 10;
+
 var searchUrl = $"https://www.google.com/search?q={keyword}&num={maxResults}&hl=en";
 var bingSearchUrl = $"https://www.bing.com/search?q={keyword}&count=10";
 var file = Path.Combine(@"D:\tmp", "input.txt");
@@ -37,26 +44,27 @@ if (getData)
 }
 
 //var ex = new GoogleRankExtractor();
-//using var tmp = new StreamReader(file);
-//var r = ex.Extract("https://www.sympli.com.au", tmp);
-//foreach (var item in r)
-//{
-//    Console.WriteLine(item);
-//}
-//return;
-
-
-await using (var searchResultStream = await httpClient.GetStreamAsync(searchUrl))
+var ex = new BingRankExtractor();
+using var tmp = new StreamReader(file);
+var r = ex.Extract("https://www.sympli.com.au", tmp);
+foreach (var item in r)
 {
-    var ex = new GoogleRankExtractor();
-    using var tmp = new StreamReader(searchResultStream);
-    var r = ex.Extract("https://www.sympli.com.au", tmp);
-
-    foreach (var item in r)
-    {
-        Console.WriteLine(item);
-    }
+    Console.WriteLine(item);
 }
+return;
+
+
+//await using (var searchResultStream = await httpClient.GetStreamAsync(searchUrl))
+//{
+//    var ex = new GoogleRankExtractor();
+//    using var tmp = new StreamReader(searchResultStream);
+//    var r = ex.Extract("https://www.sympli.com.au", tmp);
+
+//    foreach (var item in r)
+//    {
+//        Console.WriteLine(item);
+//    }
+//}
 
 return;
 

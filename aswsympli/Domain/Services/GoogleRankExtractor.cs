@@ -7,72 +7,81 @@ namespace Domain.Services
     {
         public IEnumerable<SEORecord> Extract(string companyUrl, StreamReader resultStream)
         {
-            const char detectSectionEndPattern = '"';
-            var simpliedUrl = companyUrl
-                .Replace("https://", string.Empty)
-                .Replace("http://", string.Empty)
-                .Replace("www.", ".");
+            var simpliedUrl = new Uri(companyUrl).Host.Replace("www.", string.Empty);
 
-            var detectPattern = $"<a href=\"/url?q={simpliedUrl}";
-            var detectStartSectionIndex = detectPattern.LastIndexOf('=');
+            // A section for a result listed will be marked-up with this pattern. Used for filtering the incoming stream of characters.
+            var detectPattern = $"<div class=\"notranslate\"><cite class=\"\" role=\"text\">{simpliedUrl}</cite>";
+
+            // If the stream reach this far in the filter, we're in a section.
+            var detectStartSectionIndex = detectPattern.IndexOf("\"><cite");
+
+            // A section can be considered end with this tag.
+            var sdetectSectionEndPattern = "</cite>";
 
             var detectPatternIndex = 0;
-            var sectionStart = false;
-            var sectionEnd = false;
+            var detectSectionEndIndex = 0;
+
+            var sectionStarted = false;
+            var sectionEnded = false;
             var currentSectionIndex = -1;
             var foundAtIndexes = new Queue<int>();
 
             var result = new List<SEORecord>();
-            //var queue = new Queue<char>();
 
             while (!resultStream.EndOfStream)
             {
                 var c = (char)resultStream.Read();
-                //queue.Enqueue(c);
+
+                // When within a section, track if there is a closing tag of the section for flagging it.
+                if (sectionStarted)
+                {
+                    if (c == sdetectSectionEndPattern[detectSectionEndIndex])
+                    {
+                        detectSectionEndIndex++;
+
+                        if (detectSectionEndIndex == sdetectSectionEndPattern.Length - 1)
+                        {
+                            sectionEnded = true;
+                        }
+                    }
+                    else
+                    {
+                        detectSectionEndIndex = 0;
+                    }
+                }
+
+                // The stream of characters keep coming thru our filtering pattern. Only increase the matching index
+                // when it matches, else reset the index IF we're not currently within a section (because when inside a section
+                // there are noisy markups that can be ignored and keep the tracking).
+                if (!sectionEnded && !sectionStarted && detectPatternIndex == detectStartSectionIndex)
+                {
+                    sectionStarted = true;
+                    currentSectionIndex++;
+                }
 
                 if (c == detectPattern[detectPatternIndex])
                 {
-                    if (!sectionEnd && !sectionStart && detectPatternIndex == detectStartSectionIndex)
-                    {
-                        sectionStart = true;
-                        currentSectionIndex++;
-                    }
-
                     detectPatternIndex++;
                 }
-                else
+                else if (!sectionStarted)
                 {
-                    if (!sectionStart)
-                    {
-                        detectPatternIndex = 0;
-                    }
-
-                    if (sectionStart && c == detectSectionEndPattern)
-                    {
-                        sectionEnd = true;
-                    }
-                }
-
-                if (sectionStart && detectPatternIndex == detectPattern.Length - 1)
-                {
-                    foundAtIndexes.Enqueue(currentSectionIndex);
-                    sectionEnd = true;
-                }
-
-                if (sectionEnd)
-                {
-                    sectionStart = false;
-                    sectionEnd = false;
                     detectPatternIndex = 0;
                 }
-            }
 
-            if (!foundAtIndexes.Any())
-            {
-                return Enumerable.Empty<SEORecord>();
-            }
+                if (sectionStarted && detectPatternIndex == detectPattern.Length - 1)
+                {
+                    foundAtIndexes.Enqueue(currentSectionIndex);
+                    sectionEnded = true;
+                }
 
-            //File.WriteAllText(@"D:\tmp\debug.txt", string.Join(null, queue));
+                if (sectionEnded)
+                {
+                    sectionStarted = false;
+                    sectionEnded = false;
+                    detectPatternIndex = 0;
+                    detectSectionEndIndex = 0;
+                }
+            }
 
             var nowUTC = DateTime.UtcNow;
             return foundAtIndexes.Select(i => new SEORecord

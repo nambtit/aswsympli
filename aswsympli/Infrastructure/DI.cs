@@ -23,11 +23,7 @@ namespace Infrastructure
                 SetHttpClientHeaders(client);
             });
 
-            services.AddScoped<IApplicationDb, InMemStorage>();
-            services.AddScoped<ISearchHttpClientFactory, SearchHttpClientFactory>();
-
-            //services.AddScoped<IGoogleSearchDataService, GoogleSearchDataService>()
-            //        .AddScoped<IBingSearchDataService, BingSearchDataService>();
+            services.AddSingleton<IApplicationDb, InMemStorage>();
 
             return services;
         }

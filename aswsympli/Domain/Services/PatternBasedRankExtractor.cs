@@ -3,12 +3,17 @@ using Domain.ValueObjects;
 
 namespace Domain.Services
 {
-    public class BingRankExtractor : PatternBasedRankExtractor, IBingSEORankExtractor
+    internal class PatternBasedExtractOptions
     {
-        public IEnumerable<SEORecord> Extract(string companyUrl, StreamReader resultStream)
-        {
-            var simpliedUrl = new Uri(companyUrl).Host.Replace("www.", string.Empty);
+        public string DetectPattern { get; set; }
+        public string DetectSectionEndPattern { get; set; }
+        public int SectionStartIndex { get; set; }
+    }
 
+    public abstract class PatternBasedRankExtractor
+    {
+        public IEnumerable<SEORecord> Extract(PatternBasedExtractOptions options)
+        {
             // A section for a result listed will be marked-up with this pattern. Used for filtering the incoming stream of characters.
             var detectPattern = $"<div class=\"b_attribution\"><cite>{simpliedUrl}</cite>";
 
