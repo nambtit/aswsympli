@@ -3,7 +3,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Services
 {
-    internal class PatternBasedExtractOptions
+    public class PatternBasedExtractOptions
     {
         public string DetectPattern { get; set; }
         public string DetectSectionEndPattern { get; set; }
@@ -12,16 +12,19 @@ namespace Domain.Services
 
     public abstract class PatternBasedRankExtractor
     {
-        public IEnumerable<SEORecord> Extract(PatternBasedExtractOptions options)
+        public IEnumerable<SEORecord> ExtractWithOptions(StreamReader resultStream, Action<PatternBasedExtractOptions> optionBuilder)
         {
+            var options = new PatternBasedExtractOptions();
+            optionBuilder(options);
+
             // A section for a result listed will be marked-up with this pattern. Used for filtering the incoming stream of characters.
-            var detectPattern = $"<div class=\"b_attribution\"><cite>{simpliedUrl}</cite>";
+            var detectPattern = options.DetectPattern;
 
             // If the stream reach this far in the filter, we're in a section.
-            var detectStartSectionIndex = detectPattern.IndexOf("\"><cite");
+            var detectStartSectionIndex = options.SectionStartIndex;
 
             // A section can be considered end with this tag.
-            var sdetectSectionEndPattern = "</cite>";
+            var sdetectSectionEndPattern = options.DetectSectionEndPattern;
 
             var detectPatternIndex = 0;
             var detectSectionEndIndex = 0;

@@ -43,8 +43,8 @@ if (getData)
     return;
 }
 
-//var ex = new GoogleRankExtractor();
-var ex = new BingRankExtractor();
+var ex = new GoogleRankExtractor();
+//var ex = new BingRankExtractor();
 using var tmp = new StreamReader(file);
 var r = ex.Extract("https://www.sympli.com.au", tmp);
 foreach (var item in r)
