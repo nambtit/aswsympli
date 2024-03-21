@@ -5,30 +5,30 @@ using Application.Models;
 
 namespace Infrastructure.DB
 {
-    public class InMemStorage : IApplicationDb
-    {
-        private readonly ConcurrentDictionary<AppSearchEngineEnum, SearchRankData> _storage;
+	public class InMemStorage : IApplicationDb
+	{
+		private readonly ConcurrentDictionary<AppSearchEngineEnum, SearchRankData> _storage;
 
-        public InMemStorage()
-        {
-            _storage = new ConcurrentDictionary<AppSearchEngineEnum, SearchRankData>();
-        }
+		public InMemStorage()
+		{
+			_storage = new ConcurrentDictionary<AppSearchEngineEnum, SearchRankData>();
+		}
 
-        public Task<SearchRankData> GetRankDataByEngineAsync(AppSearchEngineEnum fromEngine)
-        {
-            if (!_storage.TryGetValue(fromEngine, out var rankData))
-            {
-                return Task.FromResult(new SearchRankData(fromEngine));
-            }
+		public Task<SearchRankData> GetRankDataByEngineAsync(AppSearchEngineEnum fromEngine)
+		{
+			if (!_storage.TryGetValue(fromEngine, out var rankData))
+			{
+				return Task.FromResult((SearchRankData)null);
+			}
 
-            return Task.FromResult(rankData);
-        }
+			return Task.FromResult(rankData);
+		}
 
-        public Task UpdateRankDataByEngineAsync(AppSearchEngineEnum engine, SearchRankData data)
-        {
-            _storage.AddOrUpdate(engine, data, (engine, data) => data);
+		public Task UpdateRankDataByEngineAsync(AppSearchEngineEnum engine, SearchRankData data)
+		{
+			_storage.AddOrUpdate(engine, data, (engine, data) => data);
 
-            return Task.CompletedTask;
-        }
-    }
+			return Task.CompletedTask;
+		}
+	}
 }

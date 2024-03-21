@@ -45,10 +45,10 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
 
             foreach (var kw in keywords)
             {
-                var totalResults = 300;
+                var totalResults = 0;
                 var pageIndex = 0;
-                var googleRankData = new SearchRankData(AppSearchEngineEnum.Google);
-                var bingRankData = new SearchRankData(AppSearchEngineEnum.Bing);
+                var googleRankData = new SearchRankData(AppSearchEngineEnum.Google, kw, companyUrl);
+                var bingRankData = new SearchRankData(AppSearchEngineEnum.Bing, kw, companyUrl);
 
                 var cts = new CancellationTokenSource();
 
@@ -72,13 +72,12 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
                 await _applicationStorage.UpdateRankDataByEngineAsync(AppSearchEngineEnum.Google, googleRankData);
                 pageIndex = 0;
                 totalResults = 0;
-                relativePageSize = 10;
                 cts = new CancellationTokenSource();
 
                 while (totalResults < topNResults)
                 {
                     var pageSize = (topNResults - totalResults) > relativePageSize ? relativePageSize : topNResults - totalResults;
-                    await using (var bingData = await _bingSearchDataService.GetSearchDataStreamAsync(kw, pageSize, pageIndex * relativePageSize, cts.Token))
+                    await using (var bingData = await _bingSearchDataService.GetSearchDataStreamAsync(kw, pageSize, totalResults, cts.Token))
                     {
                         using var reader = new StreamReader(bingData);
                         var rankData = _bingSEORankExtractor.Extract(companyUrl, reader);

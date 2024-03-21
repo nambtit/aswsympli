@@ -1,17 +1,18 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+	ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h3 class="display-6">Sympli SEO Rank Board</h3>
-    <div>
-        <p>Keyword: @Model.Keyword</p>
-        <p>Url: @Model.Keyword</p>
-    </div>
-    <div style="margin-top: 20px;">
-        <span>Google: @string.Join(",", @Model.GoogleRanks)</span><br/>
-        <span>Bing: @string.Join(",", @Model.BingRanks)</span>
-    </div>
+<div>
+	<h3>Sympli SEO Rank Board</h3>
+	@foreach (var e in Model.Data)
+	{
+		<ul>
+			<li><span>Keyword:</span><span>@e.Keyword</span></li>
+			<li><span>Company URL:</span><span>@e.CompanyUrl</span></li>
+			<li><span>Google Ranks:</span><span>@string.Join(",", e.GoogleRanks)</span></li>
+			<li><span>Bing Ranks:</span><span>@string.Join(",", e.BingRanks)</span></li>
+		</ul>
+	}
 </div>

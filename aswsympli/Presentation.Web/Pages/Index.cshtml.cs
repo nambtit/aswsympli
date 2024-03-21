@@ -4,32 +4,59 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Presentation.Web.Pages
 {
-    public class IndexModel : PageModel
-    {
-        private readonly ILogger<IndexModel> _logger;
-        private readonly IGetSEORankDataHandler _handler;
+	public class IndexModel : PageModel
+	{
+		private readonly ILogger<IndexModel> _logger;
+		private readonly IGetSEORankDataHandler _handler;
 
-        public IndexModel(ILogger<IndexModel> logger, IGetSEORankDataHandler handler)
-        {
-            _logger = logger;
-            _handler = handler;
-        }
+		public IndexModel(ILogger<IndexModel> logger, IGetSEORankDataHandler handler)
+		{
+			_logger = logger;
+			_handler = handler;
+		}
 
-        public async Task OnGet()
-        {
-            var data = await _handler.HandleAsync();
+		public async Task OnGet()
+		{
+			var rankData = await _handler.HandleAsync();
 
-            GoogleRanks = data.FirstOrDefault(e => e.Engine == AppSearchEngineEnum.Google).Ranks ?? Enumerable.Empty<int>();
-            BingRanks = data.FirstOrDefault(e => e.Engine == AppSearchEngineEnum.Bing).Ranks ?? Enumerable.Empty<int>();
+			if (rankData == null || !rankData.Any())
+			{
+				Data = Enumerable.Empty<RankDataViewModel>();
+				return;
+			}
 
-            Keyword = "\"e-settlements\"";
-            CompanyUrl = "https://www.sympli.com.au";
-        }
+			rankData = rankData.Where(e => e != null);
 
-        public IEnumerable<int> GoogleRanks { get; set; }
-        public IEnumerable<int> BingRanks { get; set; }
-        public string Keyword { get; set; }
-        public string CompanyUrl { get; set; }
-    }
+			var tmp = new List<RankDataViewModel>();
+
+			foreach (var e in rankData.GroupBy(e => e.Keyword))
+			{
+				var d = new RankDataViewModel
+				{
+					Keyword = e.Key,
+					CompanyUrl = e.FirstOrDefault(e => !string.IsNullOrWhiteSpace(e.CompanyUrl)).CompanyUrl ?? string.Empty,
+					BingRanks = e.FirstOrDefault(e => e.Engine == AppSearchEngineEnum.Bing)?.Ranks ?? new int[0].Order(),
+					GoogleRanks = e.FirstOrDefault(e => e.Engine == AppSearchEngineEnum.Google)?.Ranks ?? new int[0].Order(),
+				};
+
+				tmp.Add(d);
+			}
+
+			Data = tmp;
+		}
+
+		public IEnumerable<RankDataViewModel> Data { get; set; }
+	}
+
+	public class RankDataViewModel
+	{
+		public IOrderedEnumerable<int> GoogleRanks { get; set; }
+
+		public IOrderedEnumerable<int> BingRanks { get; set; }
+
+		public string Keyword { get; set; }
+
+		public string CompanyUrl { get; set; }
+	}
 }
 
