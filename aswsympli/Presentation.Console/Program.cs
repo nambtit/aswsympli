@@ -18,13 +18,13 @@ static HttpClient SetHttpClientHeaders()
 var httpClient = SetHttpClientHeaders();
 
 const string keyword = @"""e-settlements""";
-const int maxResults = 100;
+const int maxResults = 50;
 
 var searchUrl = $"https://www.google.com/search?q={keyword}&num={maxResults}&hl=en";
-var bingSearchUrl = $"https://www.bing.com/search?q={keyword}&count=100";
+var bingSearchUrl = $"https://www.bing.com/search?q={keyword}&count=15";
 var file = Path.Combine(@"D:\tmp", "input.txt");
 
-var getData = false;
+var getData = true;
 var getBingData = true;
 
 if (getBingData)

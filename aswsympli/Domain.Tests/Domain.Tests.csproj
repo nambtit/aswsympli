@@ -25,7 +25,16 @@
   <ItemGroup>
     <Using Include="Xunit" />
     <Using Include="FluentAssertions" />
-    <Using Include="Moq"/>
+    <Using Include="Moq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\Bing-Top10-[Ranked-0-1].txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Google-Top10-[Ranked-1-6].txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -3,19 +3,19 @@ using Domain.Services;
 
 namespace Domain.Tests.Services
 {
-	public class GoogleRankExtractorTest
+	public class BingRankExtractorTest
 	{
-		public GoogleRankExtractorTest()
+		public BingRankExtractorTest()
 		{
 		}
 
 		[Fact]
-		public void ShouldExtractSearchDataProperlyFromGoogle()
+		public void ShouldExtractSearchDataProperlyFromBing()
 		{
 			// Arrange
-			var sut = new GoogleRankExtractor();
+			var sut = new BingRankExtractor();
 			var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			var dataFile = Path.Combine(currentDir, @"Data/Google-Top10-[Ranked-1-6].txt");
+			var dataFile = Path.Combine(currentDir, @"Data/Bing-Top10-[Ranked-0-1].txt");
 			using var stream = new StreamReader(dataFile);
 			const string companyUrl = "https://www.dummysite.test";
 
@@ -24,9 +24,9 @@ namespace Domain.Tests.Services
 
 			// Assert
 			result.Should().NotBeNull();
-			result.TotalResults.Should().Be(10);
-			result.Engine.Should().Be(Enums.SearchEngineEnum.Google);
-			result.Ranks.Should().Equal(new[] { 1, 6 }.Order());
+			result.TotalResults.Should().Be(17);
+			result.Engine.Should().Be(Enums.SearchEngineEnum.Bing);
+			result.Ranks.Should().Equal(new[] { 0, 1 }.Order());
 			stream.EndOfStream.Should().BeTrue();
 		}
 	}
