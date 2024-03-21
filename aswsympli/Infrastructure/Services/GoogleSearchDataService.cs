@@ -1,16 +1,15 @@
 ﻿using Application.Abstraction;
 using Domain.Enums;
-using Infrastructure.Factories;
 
 namespace Infrastructure.Services
 {
     public class GoogleSearchDataService : IGoogleSearchDataService
     {
-        private readonly ISearchHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
 
-        public GoogleSearchDataService(ISearchHttpClientFactory factory)
+        public GoogleSearchDataService(HttpClient httpClient)
         {
-            _httpClientFactory = factory;
+            _httpClient = httpClient;
         }
 
         public Task<Stream> GetSearchDataStreamAsync(SearchEngineEnum searchEngine, string keyword)
@@ -20,22 +19,18 @@ namespace Infrastructure.Services
 
         public async Task<Stream> GetSearchDataStreamAsync(string keyword)
         {
-            var httpClient = _httpClientFactory.CreateSearchHttpClient();
-
             const int maxResults = 10;
-            var searchUrl = $"https://www.google.com/search?q={keyword}&num={maxResults}&hl=en";
+            var searchUrl = $"/search?q={keyword}&num={maxResults}&hl=en";
 
-            var sjson = await httpClient.GetStreamAsync(searchUrl);
+            var sjson = await _httpClient.GetStreamAsync(searchUrl);
 
             return sjson;
         }
 
         public async IAsyncEnumerable<Stream> GetSearchDataStreamChunkAsync(string keyword, CancellationToken token)
         {
-            var httpClient = _httpClientFactory.CreateSearchHttpClient();
-
             const int maxResults = 10;
-            var searchUrl = $"https://www.google.com/search?q={keyword}&num={maxResults}&hl=en";
+            var searchUrl = $"/search?q={keyword}&num={maxResults}&hl=en";
 
             foreach (var a in new string[] { searchUrl, searchUrl })
             {
@@ -44,7 +39,7 @@ namespace Infrastructure.Services
                     break;
                 }
 
-                var sjson = await httpClient.GetStreamAsync(a, token);
+                var sjson = await _httpClient.GetStreamAsync(a, token);
                 yield return sjson;
             }
         }
