@@ -1,5 +1,6 @@
 ﻿using Application.Abstraction;
 using Domain.Enums;
+using Domain.Services;
 
 namespace Application.Features.SEORank.Commands.UpdateSEORank
 {

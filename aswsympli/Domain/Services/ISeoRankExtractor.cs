@@ -10,4 +10,7 @@ namespace Domain.Services
         /// </summary>
         public IEnumerable<SEORecord> Extract(string companyUrl, StreamReader resultStream);
     }
+
+    public interface IGoogleSEORankExtractor : ISEORankExtractor { }
+    public interface IBingSEORankExtractor : ISEORankExtractor { }
 }

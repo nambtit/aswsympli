@@ -11,6 +11,8 @@ namespace Presentation.Web
             services.AddScoped<IApplicationConfig, AppConfig>();
             services.AddSingleton<RankDataUpdateService>();
 
+            services.AddHostedService<RankDataUpdateService>();
+
             return services;
         }
     }

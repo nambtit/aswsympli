@@ -1,5 +1,4 @@
-﻿using Application.Abstraction;
-using Application.Features.SEORank.Commands.UpdateSEORank;
+﻿using Application.Features.SEORank.Commands.UpdateSEORank;
 using Application.Features.SEORank.Queries.GetSEORank;
 using Domain.Services;
 using Microsoft.Extensions.Configuration;
@@ -14,10 +13,8 @@ namespace Application
             services.AddScoped<IGetSEORankDataHandler, GetSEORankDataHandler>()
                     .AddScoped<IUpdateSEORankDataHandler, UpdateSEORankDataHandler>();
 
-            services.AddScoped<GoogleRankExtractor>();
-            services.AddScoped<BingRankExtractor>();
-            services.AddScoped<IGoogleSEORankExtractor>(sp => (IGoogleSEORankExtractor)sp.GetService<GoogleRankExtractor>());
-            services.AddScoped<IBingSEORankExtractor>(sp => (IBingSEORankExtractor)sp.GetService<GoogleRankExtractor>());
+            services.AddScoped<IGoogleSEORankExtractor, GoogleRankExtractor>();
+            services.AddScoped<IBingSEORankExtractor, BingRankExtractor>();
 
             return services;
         }

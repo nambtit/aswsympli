@@ -5,13 +5,13 @@
 }
 
 <div class="text-center">
-    <h3 class="display-5">Sympli SEO Rank Board</h3>
+    <h3 class="display-6">Sympli SEO Rank Board</h3>
     <div>
         <p>Keyword: @Model.Keyword</p>
         <p>Url: @Model.Keyword</p>
     </div>
     <div style="margin-top: 20px;">
-        <p>Google: @string.Join(",", @Model.GoogleRanks)</p>
-        <p>Bing: @string.Join(",", @Model.BingRanks)</p>
+        <span>Google: @string.Join(",", @Model.GoogleRanks)</span><br/>
+        <span>Bing: @string.Join(",", @Model.BingRanks)</span>
     </div>
 </div>

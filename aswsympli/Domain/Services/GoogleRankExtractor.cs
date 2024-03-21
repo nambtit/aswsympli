@@ -3,7 +3,7 @@ using Domain.ValueObjects;
 
 namespace Domain.Services
 {
-    public class GoogleRankExtractor : ISEORankExtractor
+    public class GoogleRankExtractor : IGoogleSEORankExtractor
     {
         public IEnumerable<SEORecord> Extract(string companyUrl, StreamReader resultStream)
         {
