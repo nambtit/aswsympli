@@ -18,10 +18,10 @@ static HttpClient SetHttpClientHeaders()
 var httpClient = SetHttpClientHeaders();
 
 const string keyword = @"""e-settlements""";
-const int maxResults = 10;
+const int maxResults = 100;
 
 var searchUrl = $"https://www.google.com/search?q={keyword}&num={maxResults}&hl=en";
-var bingSearchUrl = $"https://www.bing.com/search?q={keyword}&count=10";
+var bingSearchUrl = $"https://www.bing.com/search?q={keyword}&count=100";
 var file = Path.Combine(@"D:\tmp", "input.txt");
 
 var getData = false;
@@ -43,28 +43,25 @@ if (getData)
     return;
 }
 
-var ex = new GoogleRankExtractor();
-//var ex = new BingRankExtractor();
-using var tmp = new StreamReader(file);
-var r = ex.Extract("https://www.sympli.com.au", tmp);
-foreach (var item in r)
+//var ex = new GoogleRankExtractor();
+////var ex = new BingRankExtractor();
+//using var tmp = new StreamReader(file);
+//var r = ex.Extract("https://www.sympli.com.au", tmp);
+//Console.WriteLine($"Engine: {r.Engine}, RecordedAtUtc: {r.RecordedAtUtc}, Ranks: {string.Join(",", r.Ranks)}, Total: {r.TotalResults}");
+//return;
+
+
+await using (var searchResultStream = await httpClient.GetStreamAsync(bingSearchUrl))
 {
-    Console.WriteLine(item);
+    //var ex = new GoogleRankExtractor();
+    var ex = new BingRankExtractor();
+    using var tmp = new StreamReader(searchResultStream);
+    var r = ex.Extract("https://www.sympli.com.au", tmp);
+
+    Console.WriteLine($"Engine: {r.Engine}, RecordedAtUtc: {r.RecordedAtUtc}, Ranks: {string.Join(",", r.Ranks)}, Total: {r.TotalResults}");
 }
-return;
 
 
-//await using (var searchResultStream = await httpClient.GetStreamAsync(searchUrl))
-//{
-//    var ex = new GoogleRankExtractor();
-//    using var tmp = new StreamReader(searchResultStream);
-//    var r = ex.Extract("https://www.sympli.com.au", tmp);
-
-//    foreach (var item in r)
-//    {
-//        Console.WriteLine(item);
-//    }
-//}
 
 return;
 

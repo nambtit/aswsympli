@@ -63,18 +63,16 @@ namespace Application.Features.SEORank.Commands.UpdateSEORank
             }
         }
 
-        private SearchRankData ToSearchRankData(IEnumerable<SEORecord> records)
+        private SearchRankData ToSearchRankData(RankExtractResult result)
         {
-            if (records == null || !records.Any())
+            if (result == null)
             {
                 return null;
             }
 
-            var d = records.First();
-            var ranks = records.Select(e => e.Rank);
-            var eng = d.SearchEngine == Domain.Enums.SearchEngineEnum.Google ? AppSearchEngineEnum.Google : AppSearchEngineEnum.Bing;
+            var eng = result.Engine == Domain.Enums.SearchEngineEnum.Google ? AppSearchEngineEnum.Google : AppSearchEngineEnum.Bing;
 
-            return new SearchRankData(eng, d.RecordedAtUtc, ranks.ToArray());
+            return new SearchRankData(eng, result.RecordedAtUtc, result.Ranks);
         }
     }
 }

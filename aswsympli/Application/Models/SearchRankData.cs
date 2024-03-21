@@ -4,7 +4,7 @@ namespace Application.Models
 {
     public class SearchRankData
     {
-        public SearchRankData(AppSearchEngineEnum engine, DateTime recordedAtUtc, params int[] ranks)
+        public SearchRankData(AppSearchEngineEnum engine, DateTime recordedAtUtc, IOrderedEnumerable<int> ranks)
         {
             Engine = engine;
             Ranks = ranks;
@@ -13,7 +13,7 @@ namespace Application.Models
 
         public AppSearchEngineEnum Engine { get; init; }
 
-        public IEnumerable<int> Ranks { get; init; }
+        public IOrderedEnumerable<int> Ranks { get; init; }
 
         public DateTime RecordedAtUTC { get; init; }
     }

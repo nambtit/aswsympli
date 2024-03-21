@@ -4,7 +4,7 @@ namespace Domain.Services
 {
     public class GoogleRankExtractor : PatternBasedRankExtractor, IGoogleSEORankExtractor
     {
-        public IEnumerable<SEORecord> Extract(string companyUrl, StreamReader resultStream)
+        public RankExtractResult Extract(string companyUrl, StreamReader resultStream)
         {
             var simpliedUrl = new Uri(companyUrl).Host.Replace("www.", string.Empty);
 
@@ -17,12 +17,16 @@ namespace Domain.Services
             // A section can be considered end with this tag.
             var sdetectSectionEndPattern = "</cite>";
 
-            return ExtractWithOptions(resultStream, options =>
+            var result = ExtractWithOptions(resultStream, options =>
             {
                 options.DetectPattern = detectPattern;
                 options.DetectSectionEndPattern = sdetectSectionEndPattern;
                 options.SectionStartIndex = detectStartSectionIndex;
             });
+
+            result.Engine = Enums.SearchEngineEnum.Google;
+
+            return result;
         }
     }
 }
