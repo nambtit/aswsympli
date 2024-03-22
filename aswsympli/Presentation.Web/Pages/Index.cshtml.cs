@@ -6,12 +6,10 @@ namespace Presentation.Web.Pages
 {
 	public class IndexModel : PageModel
 	{
-		private readonly ILogger<IndexModel> _logger;
 		private readonly IGetSEORankDataHandler _handler;
 
 		public IndexModel(ILogger<IndexModel> logger, IGetSEORankDataHandler handler)
 		{
-			_logger = logger;
 			_handler = handler;
 		}
 

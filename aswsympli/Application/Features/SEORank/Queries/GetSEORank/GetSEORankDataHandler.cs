@@ -1,4 +1,5 @@
 ﻿using Application.Abstraction;
+using Application.Const;
 using Application.Features.SEORank.Enums;
 using Application.Models;
 
@@ -12,20 +13,29 @@ namespace Application.Features.SEORank.Queries.GetSEORank
 	public class GetSEORankDataHandler : IGetSEORankDataHandler
 	{
 		private readonly IApplicationDb _applicationStorage;
+		private readonly IAppDataCache _cache;
 
-		public GetSEORankDataHandler(IApplicationDb applicationStorage)
+		public GetSEORankDataHandler(IApplicationDb applicationStorage, IAppDataCache cache)
 		{
 			_applicationStorage = applicationStorage;
+			_cache = cache;
 		}
 
 		public async Task<IEnumerable<SearchRankData>> HandleAsync()
 		{
-			var googleData = _applicationStorage.GetRankDataByEngineAsync(AppSearchEngineEnum.Google);
+			if (!_cache.TryGet<SearchRankData>(CacheKey.GoogleSeoRankData, out var googleData))
+			{
+				googleData = await _applicationStorage.GetRankDataByEngineAsync(AppSearchEngineEnum.Google);
+				_cache.TrySet<SearchRankData>(CacheKey.GoogleSeoRankData, googleData);
+			}
 
-			var bingData = _applicationStorage.GetRankDataByEngineAsync(AppSearchEngineEnum.Bing);
+			if (!_cache.TryGet<SearchRankData>(CacheKey.BingSeoRankData, out var bingData))
+			{
+				bingData = await _applicationStorage.GetRankDataByEngineAsync(AppSearchEngineEnum.Bing);
+				_cache.TrySet<SearchRankData>(CacheKey.BingSeoRankData, bingData);
+			}
 
-			var data = await Task.WhenAll(googleData, bingData);
-			return data.Where(e => e != null);
+			return new[] { googleData, bingData }.Where(e => e != null);
 		}
 	}
 }

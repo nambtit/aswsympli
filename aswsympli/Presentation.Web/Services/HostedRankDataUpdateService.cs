@@ -16,7 +16,6 @@ namespace Presentation.Web.Services
             _serviceProvider = serviceProvider;
             _logger = logger;
             var interval = TimeSpan.FromMinutes(applicationConfig.SEORankDataRefreshFrequencyMinutes);
-            interval = TimeSpan.FromSeconds(10);
             _timer = new SysTimer.Timer(interval);
         }
 

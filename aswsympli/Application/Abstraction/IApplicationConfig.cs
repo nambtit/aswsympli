@@ -30,6 +30,11 @@
         /// </summary>
         int MaxResultPerPage { get; }
 
-        public string DbConnectionString { get; set; }
+        public string DbConnectionString { get; }
+
+        /// <summary>
+        /// The expiry in minutes for caching SEO rank data.
+        /// </summary>
+        public int CacheAbsExpiryMinutes { get; }
     }
 }
