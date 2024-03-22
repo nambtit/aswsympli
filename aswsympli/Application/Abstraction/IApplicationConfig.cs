@@ -29,5 +29,7 @@
         /// sends many subsequent requests for searches.
         /// </summary>
         int MaxResultPerPage { get; }
+
+        public string DbConnectionString { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace Infrastructure
                 SetHttpClientHeaders(client);
             });
 
-            services.AddSingleton<IApplicationDb, InMemStorage>();
+            services.AddScoped<IApplicationDb, ApplicationDbContext>();
 
             return services;
         }
