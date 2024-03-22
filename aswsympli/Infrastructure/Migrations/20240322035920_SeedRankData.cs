@@ -13,7 +13,7 @@ namespace Infrastructure.Migrations
         {
             const string keyword = "\"e-settlements\"";
             const string companyUrl = "https://www.sympli.com.au";
-            var utcNow = DateTime.UtcNow;
+            var utcNow = new DateTime(2024, 3, 22);
 
             migrationBuilder.InsertData(
                 table: "SeoRankData",
