@@ -24,12 +24,14 @@ namespace Infrastructure.Services
 
             if (data == null)
             {
+                _logger.LogDebug($"Cache miss for key {key}");
                 return false;
             }
 
             try
             {
                 value = (T)data;
+                _logger.LogDebug($"Cache hit for key {key}");
                 return true;
             }
             catch (Exception ex)

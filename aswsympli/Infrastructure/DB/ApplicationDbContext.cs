@@ -55,6 +55,26 @@ namespace Infrastructure.DB
             await SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<SearchRankData>> GetLatestKeywordsRankDataByEngineAsync(AppSearchEngineEnum fromEngine)
+        {
+            var engine = fromEngine == AppSearchEngineEnum.Google ? DbSearchEngineEnum.Google : DbSearchEngineEnum.Bing;
+            var googleRank = await SeoRankData.Where(e => e.Engine == engine)
+                .GroupBy(e => e.Keyword)
+                .Select(e => e.OrderByDescending(i => i.Id).First())
+                .ToArrayAsync();
+
+            if (googleRank == null || !googleRank.Any())
+            {
+                return Enumerable.Empty<SearchRankData>();
+            }
+
+            return googleRank.Select(e => new SearchRankData(fromEngine, e.Keyword, e.CompanyUrl)
+            {
+                RecordedAtUTC = e.CreatedAtUtc,
+                Ranks = e.Ranks.Order()
+            });
+        }
+
         public virtual DbSet<SeoRankData> SeoRankData { get; set; }
     }
 }

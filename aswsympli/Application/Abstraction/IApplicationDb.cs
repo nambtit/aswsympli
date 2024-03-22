@@ -5,7 +5,7 @@ namespace Application.Abstraction
 {
     public interface IApplicationDb
     {
-        Task<SearchRankData> GetRankDataByEngineAsync(AppSearchEngineEnum fromEngine);
+        Task<IEnumerable<SearchRankData>> GetLatestKeywordsRankDataByEngineAsync(AppSearchEngineEnum fromEngine);
 
         Task UpdateRankDataByEngineAsync(AppSearchEngineEnum engine, SearchRankData data);
     }
