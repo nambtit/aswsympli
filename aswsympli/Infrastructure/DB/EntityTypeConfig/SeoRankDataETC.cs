@@ -8,7 +8,7 @@ namespace Infrastructure.DB.EntityTypeConfig
     {
         public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<SeoRankData> builder)
         {
-            builder.Property(e => e.CreatedAtUtc).IsRequired().HasDefaultValue(DateTime.UtcNow);
+            builder.Property(e => e.CreatedAtUtc).IsRequired();
             builder.Property(e => e.CompanyUrl).IsRequired().HasMaxLength(256);
             builder.Property(e => e.Keyword).IsRequired().HasMaxLength(256);
             builder.Property(e => e.Engine).IsRequired().HasConversion<string>();
