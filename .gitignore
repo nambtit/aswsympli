@@ -3,3 +3,5 @@ aswsympli/*/bin
 aswsympli/*/obj
 aswsympli/*/obj
 aswsympli/Presentation.Web/app.db-wal
+aswsympli/Presentation.Web/app.db
+aswsympli/Presentation.Web/app.db-shm
