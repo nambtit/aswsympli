@@ -37,6 +37,7 @@ namespace Presentation.Web.Pages
 					CompanyUrl = e.FirstOrDefault(e => !string.IsNullOrWhiteSpace(e.CompanyUrl)).CompanyUrl ?? string.Empty,
 					BingRanks = e.FirstOrDefault(e => e.Engine == AppSearchEngineEnum.Bing)?.Ranks ?? new int[0].Order(),
 					GoogleRanks = e.FirstOrDefault(e => e.Engine == AppSearchEngineEnum.Google)?.Ranks ?? new int[0].Order(),
+					RecordedAtUTC = e.FirstOrDefault().RecordedAtUTC,
 				};
 
 				tmp.Add(d);
@@ -57,6 +58,8 @@ namespace Presentation.Web.Pages
 		public string Keyword { get; set; }
 
 		public string CompanyUrl { get; set; }
+
+		public DateTime RecordedAtUTC { get; set; }
 	}
 }
 

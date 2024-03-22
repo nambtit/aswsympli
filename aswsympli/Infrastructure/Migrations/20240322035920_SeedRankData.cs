@@ -18,12 +18,12 @@ namespace Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "SeoRankData",
                 columns: new[] { "Ranks", "Keyword", "CompanyUrl", "Engine", "CreatedAtUtc" },
-                values: new[] { "0,1", keyword, companyUrl, SearchEngineDbEnum.Bing.ToString(), utcNow.ToString() });
+                values: new[] { "0,1", keyword, companyUrl, DbSearchEngineEnum.Bing.ToString(), utcNow.ToString() });
 
             migrationBuilder.InsertData(
                 table: "SeoRankData",
                 columns: new[] { "Ranks", "Keyword", "CompanyUrl", "Engine", "CreatedAtUtc" },
-                values: new[] { "1,6", keyword, companyUrl, SearchEngineDbEnum.Google.ToString(), utcNow.ToString() });
+                values: new[] { "1,6", keyword, companyUrl, DbSearchEngineEnum.Google.ToString(), utcNow.ToString() });
         }
 
         /// <inheritdoc />

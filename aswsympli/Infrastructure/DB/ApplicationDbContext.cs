@@ -3,6 +3,7 @@ using Application.Features.SEORank.Enums;
 using Application.Models;
 using Infrastructure.DB.Entities;
 using Infrastructure.DB.EntityTypeConfig;
+using Infrastructure.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.DB
@@ -27,14 +28,31 @@ namespace Infrastructure.DB
             base.OnModelCreating(modelBuilder);
         }
 
-        public Task<SearchRankData> GetRankDataByEngineAsync(AppSearchEngineEnum fromEngine)
+        public async Task<SearchRankData> GetRankDataByEngineAsync(AppSearchEngineEnum fromEngine)
         {
-            throw new NotImplementedException();
+            var engine = fromEngine == AppSearchEngineEnum.Google ? DbSearchEngineEnum.Google : DbSearchEngineEnum.Bing;
+            var googleRank = await SeoRankData.Where(e => e.Engine == engine).OrderByDescending(e => e.Id).FirstOrDefaultAsync();
+
+            return new SearchRankData(fromEngine, googleRank.Keyword, googleRank.CompanyUrl)
+            {
+                Ranks = googleRank.Ranks.Order(),
+                RecordedAtUTC = googleRank.CreatedAtUtc
+            };
         }
 
-        public Task UpdateRankDataByEngineAsync(AppSearchEngineEnum engine, SearchRankData data)
+        public async Task UpdateRankDataByEngineAsync(AppSearchEngineEnum engine, SearchRankData data)
         {
-            throw new NotImplementedException();
+            var entry = new SeoRankData()
+            {
+                CreatedAtUtc = DateTime.UtcNow,
+                Engine = data.Engine == AppSearchEngineEnum.Google ? Enums.DbSearchEngineEnum.Google : Enums.DbSearchEngineEnum.Bing,
+                Ranks = data.Ranks.ToArray(),
+                Keyword = data.Keyword,
+                CompanyUrl = data.CompanyUrl,
+            };
+
+            await SeoRankData.AddAsync(entry);
+            await SaveChangesAsync();
         }
 
         public virtual DbSet<SeoRankData> SeoRankData { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Enums
 {
-    public enum SearchEngineDbEnum
+    public enum DbSearchEngineEnum
     {
         Google,
         Bing

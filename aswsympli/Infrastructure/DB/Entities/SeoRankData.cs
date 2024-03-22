@@ -12,7 +12,7 @@ namespace Infrastructure.DB.Entities
 
         public string CompanyUrl { get; set; }
 
-        public SearchEngineDbEnum Engine { get; set; }
+        public DbSearchEngineEnum Engine { get; set; }
 
         public DateTime CreatedAtUtc { get; set; }
     }

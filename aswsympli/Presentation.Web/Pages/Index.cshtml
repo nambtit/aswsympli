@@ -9,10 +9,17 @@
 	@foreach (var e in Model.Data)
 	{
 		<ul>
-			<li><span>Keyword:</span><span>@e.Keyword</span></li>
-			<li><span>Company URL:</span><span>@e.CompanyUrl</span></li>
-			<li><span>Google Ranks:</span><span>@string.Join(",", e.GoogleRanks)</span></li>
-			<li><span>Bing Ranks:</span><span>@string.Join(",", e.BingRanks)</span></li>
+			<li><span>Keyword:&nbsp;</span><span>@e.Keyword</span></li>
+			<li><span>Company URL:&nbsp;</span><span>@e.CompanyUrl</span></li>
+			<li><span>Google Ranks:&nbsp;</span><span>@string.Join(",", e.GoogleRanks)</span></li>
+			<li><span>Bing Ranks:&nbsp;</span><span>@string.Join(",", e.BingRanks)</span></li>
+			<li><span>Recorded at (UTC):&nbsp;</span><span>@e.RecordedAtUTC.ToLongDateString()</span></li>
 		</ul>
+		<br/>
 	}
 </div>
+<script type="text/javascript">
+	setTimeout(function () {
+		location = ''
+	}, 30000)
+</script>
