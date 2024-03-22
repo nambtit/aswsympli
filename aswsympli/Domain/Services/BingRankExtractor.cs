@@ -1,9 +1,14 @@
-﻿using Domain.ValueObjects;
+﻿using CoreUtils.DateTime;
+using Domain.ValueObjects;
 
 namespace Domain.Services
 {
     public class BingRankExtractor : PatternBasedRankExtractor, IBingSEORankExtractor
     {
+        public BingRankExtractor(IDateTimeService dateTimeService) : base(dateTimeService)
+        {
+        }
+
         public RankExtractResult Extract(string companyUrl, StreamReader resultStream)
         {
             var simpliedUrl = new Uri(companyUrl).Host.Replace("www.", string.Empty);

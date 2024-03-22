@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using CoreUtils.DateTime;
+using Domain.Enums;
 using Domain.ValueObjects;
 
 namespace Domain.Services
@@ -12,6 +13,13 @@ namespace Domain.Services
 
     public abstract class PatternBasedRankExtractor
     {
+        private readonly IDateTimeService _dateTimeService;
+
+        protected PatternBasedRankExtractor(IDateTimeService dateTimeService)
+        {
+            _dateTimeService = dateTimeService;
+        }
+
         public RankExtractResult ExtractWithOptions(StreamReader resultStream, Action<PatternBasedExtractOptions> optionBuilder)
         {
             var options = new PatternBasedExtractOptions();
@@ -90,7 +98,7 @@ namespace Domain.Services
             }
 
             var result = new RankExtractResult();
-            result.RecordedAtUtc = DateTime.UtcNow;
+            result.RecordedAtUtc = _dateTimeService.GetUtcNow();
             result.Ranks = foundAtIndexes.Order();
             result.TotalResults = currentSectionIndex + 1;
 

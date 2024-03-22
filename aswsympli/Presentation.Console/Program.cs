@@ -1,5 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System.IO;
+using CoreUtils.DateTime;
 using Domain.Services;
 
 static HttpClient SetHttpClientHeaders()
@@ -54,7 +54,7 @@ if (getData)
 await using (var searchResultStream = await httpClient.GetStreamAsync(bingSearchUrl))
 {
     //var ex = new GoogleRankExtractor();
-    var ex = new BingRankExtractor();
+    var ex = new BingRankExtractor(new UtilDateTimeService());
     using var tmp = new StreamReader(searchResultStream);
     var r = ex.Extract("https://www.sympli.com.au", tmp);
 
