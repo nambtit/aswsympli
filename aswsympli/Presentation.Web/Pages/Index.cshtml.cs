@@ -25,8 +25,6 @@ namespace Presentation.Web.Pages
 				return;
 			}
 
-			rankData = rankData.Where(e => e != null);
-
 			var tmp = new List<RankDataViewModel>();
 
 			foreach (var e in rankData.GroupBy(e => e.Keyword))

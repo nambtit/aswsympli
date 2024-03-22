@@ -24,7 +24,8 @@ namespace Application.Features.SEORank.Queries.GetSEORank
 
 			var bingData = _applicationStorage.GetRankDataByEngineAsync(AppSearchEngineEnum.Bing);
 
-			return await Task.WhenAll(googleData, bingData);
+			var data = await Task.WhenAll(googleData, bingData);
+			return data.Where(e => e != null);
 		}
 	}
 }
