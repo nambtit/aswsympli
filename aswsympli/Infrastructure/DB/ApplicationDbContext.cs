@@ -1,6 +1,7 @@
 ﻿using Application.Abstraction;
 using Application.Features.SEORank.Enums;
 using Application.Models;
+using CoreUtils.DateTime;
 using Infrastructure.DB.Entities;
 using Infrastructure.DB.EntityTypeConfig;
 using Infrastructure.Enums;
@@ -11,10 +12,12 @@ namespace Infrastructure.DB
     public class ApplicationDbContext : DbContext, IApplicationDb
     {
         private readonly IApplicationConfig _applicationConfig;
+        private readonly IDateTimeService _dateTimeService;
 
-        public ApplicationDbContext(IApplicationConfig applicationConfig)
+        public ApplicationDbContext(IApplicationConfig applicationConfig, IDateTimeService dateTimeService)
         {
             _applicationConfig = applicationConfig;
+            _dateTimeService = dateTimeService;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -44,7 +47,7 @@ namespace Infrastructure.DB
         {
             var entry = new SeoRankData()
             {
-                CreatedAtUtc = DateTime.UtcNow,
+                CreatedAtUtc = _dateTimeService.GetUtcNow(),
                 Engine = data.Engine == AppSearchEngineEnum.Google ? Enums.DbSearchEngineEnum.Google : Enums.DbSearchEngineEnum.Bing,
                 Ranks = data.Ranks.ToArray(),
                 Keyword = data.Keyword,

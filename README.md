@@ -4,7 +4,7 @@
 
 This solution is for querying the search engines for SEO rank of a URL based on certain input keyword. It is required that no search APIs be used, and extracting the HTML respose from separate search engine to do the task instead. Currently Google and Bing are supported as search engines.
 
-There is a dashboard to show SEO rank data per keyword for ech supported search engine, and the time when the rank is recorded.
+There is a dashboard to show SEO rank data per keyword for ech supported search engine, and the time when the rank is recorded. It automatically reload to fetch new data (if any) every 30 seconds.
 
 # Solution structure
 
